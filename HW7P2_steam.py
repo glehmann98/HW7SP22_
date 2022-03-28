@@ -300,7 +300,7 @@ class steam():
             return
         else:
             self.calc()
-        return dc(self.State)  # need to deep copy so not passing just a reference back
+        return dc(self.State)
 
     def getState(self, pressure, T=None, x=None, v=None, h=None, s=None, name=None):
         return self.set(pressure, T=T, x=x, v=v, h=h, s=s, name=name)
