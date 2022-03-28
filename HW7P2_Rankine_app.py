@@ -16,10 +16,10 @@ class MainWindow(qtw.QWidget, Ui_Form, rankine):
         self.ax = self.figure.add_subplot()
         self.gb_Output.layout().addWidget(self.canvas,6,0,1,6)
         #slots
-        self.le_PHigh.editingFinished.connect(self.setPHigh) #triggered by hitting enter or leaving editing box
-        self.le_PLow.editingFinished.connect(self.setPLow) #same as line above
+        self.le_PHigh.editingFinished.connect(self.setPHigh)
+        self.le_PLow.editingFinished.connect(self.setPLow)
         self.le_TurbineEff.editingFinished.connect(self.checkTurbineEffRange)
-        self.rdo_Quality.toggled.connect(self.setQualityOrTHigh)#triggered when state of the radio button changes
+        self.rdo_Quality.toggled.connect(self.setQualityOrTHigh)
         self.btn_Calculate.clicked.connect(self.calcRankine)
 
         self.RC=rankine(8,8000,name='Default Rankine Cycle')
@@ -44,10 +44,7 @@ class MainWindow(qtw.QWidget, Ui_Form, rankine):
         return float(low)
 
     def float(self, value):
-        '''
-        this function is a check to verify that a string can be converted to a float
-        :return:
-        '''
+
         if value=='NaN': return False
         try:
             float(value)
@@ -56,12 +53,12 @@ class MainWindow(qtw.QWidget, Ui_Form, rankine):
             return False
 
     def P_High(self):
-        #this makes sure its a number
+
         ph=self.le_PHigh.text()
         if not self.isfloat(ph):
             ph='80'
             self.le_PHigh.setText(ph)
-        PHigh = float(ph) #this converts text to number
+        PHigh = float(ph) #converts text to number
         sat_high = self.satsteam.getSatProp(P_Bar=PHigh)
         #(Tsat, hf, hg, sf, sg, vf, vg)
         self.TSatHigh=self.satsteam.satProps.Tsat
@@ -76,7 +73,7 @@ class MainWindow(qtw.QWidget, Ui_Form, rankine):
         if not self.isfloat(pl):
             pl='80'
             self.le_PLow.setText(pl)
-        PLow=float(self.le_PLow.text()) #convert text to number
+        PLow=float(self.le_PLow.text()) #text to number
         sat_low = self.satsteam.getSatProp(P_Bar=PLow)
         #(Tsat, hf, hg, sf, sg, vf, vg
         st_low = 'PSat = {:0.2f} bar, TSat = {:0.2f} C'.format(PLow, self.satsteam.satProps.Tsat) #displays follwoing vals onto the UI window
