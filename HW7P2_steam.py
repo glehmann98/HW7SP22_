@@ -85,9 +85,7 @@ class saturatedData():
         return dc(state)
 
 class superheated():
-    """
-    I made this class for storing the superheated water table data for easy retrieval.
-    """
+
     def __init__(self):
         self.readTable()
 
@@ -215,9 +213,7 @@ class subcooled():
         return dc(state)
 
 class satProps():
-    """
-    For storage and retrieval of saturated properties at a given isobar or isotherm
-    """
+
     def __init__(self):
         self.tsat = None
         self.Ppsat = None
@@ -241,10 +237,7 @@ class satProps():
         return (self.tsat, self.psat, self.hf, self.hg, self.hgf, self.sf, self.sg, self.sgf, self.vf, self.vg, self.vgf)
 
 class stateProps():
-    """
-    for storage and retrieval of a thermodynamic state
-    T (C), P (kPa), h (kJ/kg), s (kJ/kg*K), v (m^3/kg), x (dimensionless)
-    """
+
     def __init__(self):
         self.name = None
         self.T = None
@@ -294,17 +287,7 @@ class steam():
         self.set(pressure, T=T, x=x, v=v, h=h, s=s, name=name)
 
     def set(self, pressure, T=None, x=None, v=None, h=None, s=None, name=None):
-        """
-        This allows me to set two properties and calculate the state of the steam
-        :param pressure: in kPa
-        :param T: in C
-        :param x: 0.0<=x<=1.0
-        :param v: in m^3/kg
-        :param h: in kJ/kg
-        :param s: in kJ/kg*K
-        :param name: a convenient name
-        :return: a deep copy of the calculated state
-        """
+
         self.State.P = pressure  # pressure - kPa
         self.State.T = T  # Temperature - degrees C
         self.State.x = x  # quality
@@ -329,14 +312,11 @@ class steam():
         us in the saturated or superheated regime.
         :return: a deep copy of the state
         '''
-        # 1. need to determine which second property is known
-        # 2. determine if two-phase/saturated or superheated
-        # 3. find all unknown thermodynamic properties by interpolation from appropriate steam table
+
         Pbar = self.State.P / 100  # pressure in bar
         name=self.name
         self.satProps=self.SatSteam.getSatProps(P_Bar=Pbar)
-        # given a pressure and one other variable (5 possiblilties) first determine region, then get the state
-        # case 1
+
         if self.State.T is not None:
             if self.State.T>(self.satProps.tsat+1): # superheated
                 self.State=self.SHSteam.getState(P=self.State.P, T=self.State.T)
@@ -373,17 +353,13 @@ class steam():
         return dc(self.State)
 
     def getVaporDome_TS(self, points=500):
-        '''
-        This function gets the TS data for the vapor dome using a cubic interpolation from saturated steam tables.
-        :param points: how many data points I want
-        :return: a numpy array with three columns of T, sf, sg
-        '''
-        # read the saturated water table into columns
+
+
         ts, ps, hfs, hgs, sfs, sgs, vfs, vgs = self.SatSteam.getCols()
         T_min = ts.min()
         T_max = ts.max()
-        TSData = np.empty((0, 3))  # create the empty array for return
-        T = np.linspace(T_min, T_max, points)  # create the linspace with then number of points I want
+        TSData = np.empty((0, 3))  #  array
+        T = np.linspace(T_min, T_max, points)
         for t in T:
             dat = np.array(
                 [[t, float(griddata((ts), sfs, (t), method='cubic')), float(griddata((ts), sgs, (t), method='cubic'))]])
@@ -391,10 +367,7 @@ class steam():
         return TSData
 
     def getVaporDome_TS2(self):
-        '''
-        This function just returns the tuple of (T, sf, sg) directly from the saturated steam table.
-        :return:
-        '''
+
         ts, ps, hfs, hgs, sfs, sgs, vfs, vgs = self.SatSteam.getCols()
         return (ts, sfs, sgs)
 
@@ -406,21 +379,7 @@ class steam():
     def print(self):
         print(self.name)
         self.State.print()
-        # print('Name: ', self.State.name)
-        # if self.State.x is None or self.State.x <0.0:
-        #     print('Region: compressed liquid')
-        #     print('p = {:0.2f} kPa'.format(self.State.P))
-        #     #print('T = {:0.1f} degrees C'.format(self.State.T))
-        #     print('h = {:0.2f} kJ/kg'.format(self.State.h))
-        # else:
-        #     print('Region: ', self.State.region)
-        #     print('p = {:0.2f} kPa'.format(self.State.P))
-        #     print('T = {:0.1f} degrees C'.format(self.State.T))
-        #     print('h = {:0.2f} kJ/kg'.format(self.State.h))
-        #     print('s = {:0.4f} kJ/(kg K)'.format(self.State.s))
-        #     print('v = {:0.6f} m^3/kg'.format(self.State.v))
-        #     if self.State.region == 'Saturated': print('x = {:0.4f}'.format(self.State.x))
-        # print()
+
 
 def main():
     inlet=steam(7350,name='Turbine Inlet') #not enough information to calculate
