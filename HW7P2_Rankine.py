@@ -84,21 +84,21 @@ class rankine():
 
     def calc_efficiency(self):
         # calculate the 4 states
-        # state 1: turbine inlet (p_high, t_high) superheated or saturated vapor
+        # state 1:) superheated or saturated vapor
         if self.T_high is None:
             self.state1 = self.steam.set(self.P_high, x=1.0, name='Turbine Inlet')
         else:
             self.state1 = self.steam.set(self.P_high, T=self.T_high, name='Turbine Inlet')
-        # state 2: turbine exit (p_low, s=s_turbine inlet) two-phase
-        # create state 2s for 100% efficient turbine
+        # state 2: turbine exit
+        # create state 2 efficient turbine
         self.state2s = self.steam.set(self.P_low, s=self.state1.s, name="Turbine Exit")
         # use turbine efficiency to calculate h2
         h2 = self.state1.h - (self.state1.h - self.state2s.h) * self.eff_turbine
-        # finally, find state 2
+        # state 2
         self.state2 = self.steam.set(self.P_low, h=h2, name="Turbine Exit")
-        # state 3: pump inlet (p_low, x=0) saturated liquid
+        # state 3: pump inlet
         self.state3 = self.steam.set(self.T_low, x=0, name='Pump Inlet')
-        # state 4: pump exit (p_high,s=s_pump_inlet) typically sub-cooled, but estimate as saturated liquid
+        # state 4: pump exit
         self.state4 = self.scl.getState(PLowSat=self.satPLow, PHighSat=self.satPHigh, P=self.P_high,
                                         T=self.satPLow.Tsat)
         self.state4.name = 'Pump Exit'
@@ -136,7 +136,7 @@ class rankine():
         s += '\n$Q_{boiler}$: ' + '{:0.1f} kJ/kg'.format(self.heat_added)
         return s
 
-    def buildVaporDomeData(self, nPoints=200):
+    def buildVaporDomeData(self, nPts=150):
         SS=self.steam.SatSteam
         for row in range(len(self.steam.SatSteam.TCol)):
             T=SS.TCol[row]
